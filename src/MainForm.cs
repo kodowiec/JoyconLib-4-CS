@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -16,8 +17,12 @@ namespace JoyConTest
 {
     public partial class MainForm : Form
     {
+
+        YAOID ovrManager = new YAOID();
+
         public MainForm()
         {
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             InitializeComponent();
 
             drawOrigin = new Point(picture1.Width / 2, picture1.Height / 2);
@@ -77,6 +82,10 @@ namespace JoyConTest
                 cube1.RotateZ = (float)(j.GetVector().eulerAngles.X * 180.0f / Math.PI);
 
                 picture1.Image = cube1.DrawCube(drawOrigin);
+
+                if (j.isLeft && j.GetButtonDown(Joycon.Button.MINUS)) j.Recenter();
+
+                if (j.isLeft && ovrManager.leftAttached) ovrManager.UpdateRotation(j.GetVector());
             }
             else
             {
@@ -114,6 +123,10 @@ namespace JoyConTest
             joyconManager.OnApplicationQuit();
         }
 
-
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ovrManager.Connect();
+            ovrManager.SpawnController(right: false);
+        }
     }
 }
