@@ -83,9 +83,28 @@ namespace JoyConTest
 
                 picture1.Image = cube1.DrawCube(drawOrigin);
 
-                if (j.isLeft && j.GetButtonDown(Joycon.Button.MINUS)) j.Recenter();
+                if ( j.GetButtonDown(Joycon.Button.SHOULDER_1)) j.Recenter();
 
-                if (j.isLeft && ovrManager.leftAttached) ovrManager.UpdateRotation(j.GetVector());
+                if (ovrManager.leftAttached)
+                //ovrManager.UpdateRotation(j.GetVector());
+                {
+                    ButtonState buttonState = new ButtonState()
+                    {
+                        A = j.GetButton(Joycon.Button.DPAD_UP),
+                        B = j.GetButton(Joycon.Button.DPAD_RIGHT),
+                        X = j.GetButton(Joycon.Button.DPAD_LEFT),
+                        Y = j.GetButton(Joycon.Button.DPAD_DOWN),
+                        TRIGGER = j.GetButton(Joycon.Button.SHOULDER_2),
+                        MENU = j.GetButton(Joycon.Button.MINUS) || j.GetButton(Joycon.Button.PLUS),
+                        SYSTEM = j.GetButton(Joycon.Button.SR),
+                        GRIP = j.GetButton(Joycon.Button.SL),
+                        JOYDOWN = j.GetButton(Joycon.Button.STICK),
+                        JoyX = j.GetStick()[0],
+                        JoyY = j.GetStick()[1]
+                    };
+
+                    ovrManager.UpdateControllerState(j.GetVector(), buttonState);
+                }
             }
             else
             {
@@ -126,7 +145,7 @@ namespace JoyConTest
         private void button1_Click(object sender, EventArgs e)
         {
             ovrManager.Connect();
-            ovrManager.SpawnController(right: false);
+            ovrManager.SpawnController(right: true);
         }
     }
 }

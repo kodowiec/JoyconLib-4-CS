@@ -23,7 +23,7 @@ namespace JoyConTest
 
         float driftYaw = 0.0f;
 
-        float currentX = -0.23f;
+        float currentX = 0.23f;
         float currentY = 1.30f;
         float currentZ = -0.15f;
 
@@ -48,7 +48,7 @@ namespace JoyConTest
             Debug.WriteLine(ipc.SendRecv($"addcontroller {serial} {controllerStr}"));
             Debug.WriteLine(ipc.SendRecv($"cfixedpose 0"));
             controllers.Add(serial);
-            if (!right) this.leftAttached = true;
+             this.leftAttached = true;
             startId += 1;
         }
 
@@ -65,6 +65,17 @@ namespace JoyConTest
 
             string resp =
                 ipc.SendRecv($"setpose {deviceId} c {currentX} {currentY} {currentZ} {q.W} {q.X} {q.Y} {q.Z}");
+            Debug.WriteLine(resp);
+        }
+
+        public void UpdateControllerState(Quaternion quat, ButtonState buttons, int deviceId = 0)
+        {
+            if (ipc == null) return;
+
+            Quaternion q = Quaternion.CreateFromYawPitchRoll(quat.eulerAngles.Z - driftYaw, (quat.eulerAngles.Y + 1.8), -quat.eulerAngles.X);
+
+            string resp =
+                ipc.SendRecv($"cstate {deviceId} {currentX} {currentY} {currentZ} {q.W} {q.X} {q.Y} {q.Z} {buttons.JoyX} {buttons.JoyY} {(buttons.JOYDOWN ? 1 : 0)} 0.0 0.0 0 {(buttons.TRIGGER ? 1 : 0)} {(buttons.A ? 1 : 0)} {(buttons.B ? 1 : 0)} {(buttons.X ? 1 : 0)} {(buttons.Y ? 1 : 0)} {(buttons.MENU ? 1 : 0)} {(buttons.SYSTEM ? 1 : 0)} {(buttons.GRIP ? 1 : 0)}");
             Debug.WriteLine(resp);
         }
     }
@@ -168,6 +179,21 @@ namespace JoyConTest
             };
         }
     }
+
+    class ButtonState
+    {
+    public bool A { get; set; } = false;
+        public bool B { get; set; } = false;
+    public bool X { get; set; } = false;
+    public bool Y { get; set; } = false;
+    public bool TRIGGER { get; set; } = false;
+    public bool MENU { get; set; } = false;
+    public bool GRIP { get; set; } = false;
+    public bool SYSTEM { get; set; } = false;
+    public bool JOYDOWN { get; set; } = false;
+    public float JoyX { get; set; } = 0.0f;
+        public float JoyY { get; set; } = 0.0f;
+}
 
     internal class Ipc
     {

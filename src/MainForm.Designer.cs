@@ -31,6 +31,7 @@
 			this.components = new System.ComponentModel.Container();
 			this.buttonScan = new System.Windows.Forms.Button();
 			this.buttonStart = new System.Windows.Forms.Button();
+			this.button1 = new System.Windows.Forms.Button();
 			this.timerUpdate = new System.Windows.Forms.Timer(this.components);
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
